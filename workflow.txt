@@ -1,0 +1,9 @@
+Database migrations 
+Create entity classes that represent Database
+Create repo queries
+create dto
+create service functions
+create controllers
+create routes
+insert it into src/routes if it is the first time to reate this router
+test,repeat

@@ -1,0 +1,38 @@
+node_modules/
+dist/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage and test output
+coverage/
+.nyc_output/
+
+# TypeScript incremental builds
+*.tsbuildinfo
+
+# Package manager caches
+.npm/
+.pnpm-store/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
