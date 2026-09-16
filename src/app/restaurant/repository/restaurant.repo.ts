@@ -3,6 +3,7 @@ import { RestaurantEntity } from "../entity/restaurant.entity.ts";
 import { db } from "../../../common/db/knex.ts";
 import { Knex } from "knex";
 import { RestaurantStatus } from "../enums.ts";
+import { RegisterDTO } from "../../auth/dto/auth.dto.ts";
 
 const RESTAURANT_COLUMNS = [
   "id",
@@ -32,13 +33,13 @@ function toEntity(row: any): RestaurantEntity {
 
 export async function findRestaurantById(
   id: number,
-): Promise<RestaurantEntity | undefined> {
+): Promise<RestaurantEntity> {
   const row = await db("restaurants")
     .select(RESTAURANT_COLUMNS)
     .where("id", id)
     .whereNull("deleted_at")
     .first();
-  return row ? toEntity(row) : undefined;
+  return toEntity(row);
 }
 
 export async function findRestaurantByOwnerId(
@@ -91,35 +92,33 @@ export async function createRestaurant(
 }
 export async function updateRestaurant(
   id: number,
-  restaurant: Partial<RestaurantEntity>,
-  userId: number,
-  conn: Knex = db,
-) {
-  const updates: Record<string, string | RestaurantStatus | undefined | Date> =
-    {};
-  const now = new Date();
-  if (restaurant.name !== undefined) {
-    updates.name = restaurant.name;
-  }
-  if (restaurant.logoUrl !== undefined) {
-    updates.logo_url = restaurant.logoUrl;
-  }
-  if (restaurant.primaryCountry !== undefined)
-    updates.primary_country = restaurant.primaryCountry;
-  if (restaurant.status !== undefined) {
-    updates.status = restaurant.status;
-    updates.status_updated_at = now;
-  }
-
-  if (Object.keys(updates).length === 0) return undefined;
-
-  updates.updated_at = now;
-  const [row] = await conn("restaurants")
+  data: { name?: string; logoUrl?: string; primaryCountry?: string },
+): Promise<RestaurantEntity> {
+  const [row] = await db("restaurants")
     .where("id", id)
-    .whereNull("deleted_at")
-    .where("owner_id", userId)
-    .update(updates)
-    .returning(RESTAURANT_COLUMNS);
+    .update({
+      name: data.name,
+      logo_url: data.logoUrl,
+      primary_country: data.primaryCountry,
 
-  return row ? toEntity(row) : undefined;
+      updated_at: new Date(),
+    })
+    .returning(RESTAURANT_COLUMNS);
+  return toEntity(row);
+}
+
+export async function updateRestaurantStatus(
+  id: number,
+  status: string,
+): Promise<RestaurantEntity> {
+  const now = new Date();
+  const [row] = await db("restaurants")
+    .where("id", id)
+    .update({
+      status,
+      status_updated_at: now,
+      updated_at: now,
+    })
+    .returning(RESTAURANT_COLUMNS);
+  return toEntity(row);
 }

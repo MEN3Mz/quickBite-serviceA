@@ -36,7 +36,7 @@ import { findUserById } from "../../user/repository/user.repo.ts";
 import {
   RestaurantService,
   restaurantService,
-} from "../../restaurants/service/restaurant.service.ts";
+} from "../../restaurant/service/restaurant.service.ts";
 import { db } from "../../../common/db/knex.ts";
 import { Knex } from "knex";
 import { time } from "../../../common/time.ts";
